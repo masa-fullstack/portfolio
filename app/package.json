@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "lint": "eslint . --ext ts --ext tsx --ext js",
     "test": "jest",
-    "test-all": "yarn lint && yarn type-check && yarn test"
+    "test-all": "yarn lint && yarn type-check && yarn test",
+    "codegen": "contentful-typescript-codegen --output @types/generated/contentful.d.ts"
   },
   "husky": {
     "hooks": {
@@ -27,7 +28,10 @@
   },
   "dependencies": {
     "autoprefixer": "^10.2.4",
-    "next": "latest",
+    "contentful": "^8.1.7",
+    "contentful-management": "^7.5.4",
+    "dotenv": "^8.2.0",
+    "next": "^10.0.6",
     "postcss": "^8.2.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
@@ -41,6 +45,7 @@
     "@typescript-eslint/eslint-plugin": "^2.25.0",
     "@typescript-eslint/parser": "^2.25.0",
     "babel-jest": "^25.2.3",
+    "contentful-typescript-codegen": "^3.2.1",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-react": "^7.19.0",
