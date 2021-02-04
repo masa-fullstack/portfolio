@@ -49,6 +49,9 @@ export interface IHobbiesFields {
 
   /** Thumbnail */
   thumbnail: Asset
+
+  /** sortNumber */
+  sortNumber: number
 }
 
 export interface IHobbies extends Entry<IHobbiesFields> {
@@ -154,6 +157,9 @@ export interface ISkillsFields {
 
   /** Level */
   level: number
+
+  /** sortNumber */
+  sortNumber: number
 }
 
 export interface ISkills extends Entry<ISkillsFields> {
@@ -183,8 +189,8 @@ export interface ISnsFields {
   /** Thumbnail */
   thumbnail: Asset
 
-  /** Content */
-  content: Document
+  /** Body */
+  body: string
 }
 
 export interface ISns extends Entry<ISnsFields> {

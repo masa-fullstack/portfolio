@@ -8,8 +8,8 @@ type Props = {
 
 const Personal = ({ personal }: Props) => {
   return (
-    <Card className="max-w-5xl">
-      <div className="grid grid-cols-5 grid-rows-3 grid-flow-row p-5">
+    <Card>
+      <div className="grid grid-cols-5 grid-rows-3 grid-flow-row">
         <div className="row-span-3 mr-5">
           <img
             className="rounded-xl"
@@ -18,7 +18,9 @@ const Personal = ({ personal }: Props) => {
         </div>
         <div className="col-span-2">
           <div className="">
-            <div className="md:text-2xl text-gray-500">{personal.name}</div>
+            <div className="md:text-2xl font-bold text-gray-500">
+              {personal.name}
+            </div>
             <div className="md:text-lg text-xs text-gray-400">
               {personal.position}
             </div>

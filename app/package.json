@@ -27,9 +27,11 @@
     ]
   },
   "dependencies": {
+    "@types/date-fns": "^2.6.0",
     "autoprefixer": "^10.2.4",
     "contentful": "^8.1.7",
     "contentful-management": "^7.5.4",
+    "date-fns": "^2.16.1",
     "dotenv": "^8.2.0",
     "next": "^10.0.6",
     "postcss": "^8.2.4",
