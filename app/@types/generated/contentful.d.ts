@@ -108,7 +108,7 @@ export interface IPersonal extends Entry<IPersonalFields> {
   }
 }
 
-export interface IPortfolioFields {
+export interface IPortfoliosFields {
   /** Title */
   title: string
 
@@ -134,7 +134,7 @@ export interface IPortfolioFields {
   content: string
 }
 
-export interface IPortfolio extends Entry<IPortfolioFields> {
+export interface IPortfolios extends Entry<IPortfoliosFields> {
   sys: {
     id: string
     type: string
@@ -143,7 +143,7 @@ export interface IPortfolio extends Entry<IPortfolioFields> {
     locale: string
     contentType: {
       sys: {
-        id: 'portfolio'
+        id: 'portfolios'
         linkType: 'ContentType'
         type: 'Link'
       }
@@ -213,6 +213,9 @@ export interface ISns extends Entry<ISnsFields> {
 export interface ITagFields {
   /** Title */
   title: string
+
+  /** sortNumber */
+  sortNumber: number
 }
 
 /** portfolio tags */
@@ -238,7 +241,7 @@ export type CONTENT_TYPE =
   | 'experiences'
   | 'hobbies'
   | 'personal'
-  | 'portfolio'
+  | 'portfolios'
   | 'skills'
   | 'sns'
   | 'tag'

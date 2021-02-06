@@ -22,9 +22,10 @@ const Experiences = ({ experiences }: Props) => {
             </div>
             <div className="col-span-3 ml-10 mb-14">
               <div className="text-xs">
-                {format(new Date(experience.fromDay), 'MMM yyyy')} -
+                {format(new Date(experience.fromDay.substr(0, 10)), 'MMM yyyy')}
+                -
                 {experience.toDay !== null
-                  ? format(new Date(experience.toDay), 'MMM yyyy')
+                  ? format(new Date(experience.toDay.substr(0, 10)), 'MMM yyyy')
                   : 'current'}
               </div>
               <div className="font-bold text-lg mb-2">{experience.title}</div>

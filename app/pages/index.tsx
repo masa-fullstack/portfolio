@@ -2,21 +2,26 @@ import {
   IExperiencesFields,
   IHobbiesFields,
   IPersonalFields,
+  IPortfoliosFields,
   ISkillsFields,
   ISnsFields,
+  ITagFields,
 } from '../@types/generated/contentful'
 import Experiences from '../components/Experiences'
 import Hobbies from '../components/Hobbies'
 import Layout from '../components/Layout'
 import Personal from '../components/Personal'
+import Portfolios from '../components/Portfolios'
 import Skills from '../components/Skills'
 import Sns from '../components/Sns'
 import {
   getExperiences,
   getHobbies,
   getPersonal,
+  getPortfolios,
   getSkills,
   getSns,
+  getTags,
 } from '../lib/api'
 
 // todo:typesにまとめる
@@ -26,6 +31,8 @@ type Props = {
   hobbies: IHobbiesFields[]
   experiences: IExperiencesFields[]
   sns: ISnsFields
+  tags: ITagFields[]
+  portfolios: IPortfoliosFields[]
 }
 
 export const Home = ({
@@ -34,6 +41,8 @@ export const Home = ({
   hobbies,
   experiences,
   sns,
+  tags,
+  portfolios,
 }: Props): JSX.Element => {
   return (
     // todo:レスポンシブで縦一列になるように
@@ -54,6 +63,9 @@ export const Home = ({
         <div className="col-span-3">
           <Experiences experiences={experiences} />
         </div>
+        <div className="col-span-5">
+          <Portfolios tags={tags} portfolios={portfolios} />
+        </div>
       </div>
     </Layout>
   )
@@ -65,9 +77,11 @@ export const getStaticProps = async () => {
   const hobbies = await getHobbies()
   const experiences = await getExperiences()
   const sns = await getSns()
+  const tags = await getTags()
+  const portfolios = await getPortfolios()
 
   return {
-    props: { personal, skills, hobbies, experiences, sns },
+    props: { personal, skills, hobbies, experiences, sns, tags, portfolios },
   }
 }
 export default Home

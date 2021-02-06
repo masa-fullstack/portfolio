@@ -3,8 +3,10 @@ import {
   IExperiencesFields,
   IHobbiesFields,
   IPersonalFields,
+  IPortfoliosFields,
   ISkillsFields,
   ISnsFields,
+  ITagFields,
 } from '../@types/generated/contentful'
 
 const client = createClient({
@@ -69,6 +71,30 @@ export const getExperiences = async (): Promise<IExperiencesFields[]> => {
   if (entries.items) {
     const experiences = entries.items.map((entry) => entry.fields)
     return experiences
+  }
+}
+
+// Tagsを全件取得
+export const getTags = async (): Promise<ITagFields[]> => {
+  const entries: EntryCollection<ITagFields> = await client.getEntries({
+    content_type: 'tag',
+    order: 'fields.sortNumber',
+  })
+  if (entries.items) {
+    const tags = entries.items.map((entry) => entry.fields)
+    return tags
+  }
+}
+
+// Portfoliosを全件取得
+export const getPortfolios = async (): Promise<IPortfoliosFields[]> => {
+  const entries: EntryCollection<IPortfoliosFields> = await client.getEntries({
+    content_type: 'portfolios',
+    order: 'fields.sortNumber',
+  })
+  if (entries.items) {
+    const portfolios = entries.items.map((entry) => entry.fields)
+    return portfolios
   }
 }
 

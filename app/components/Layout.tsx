@@ -6,11 +6,13 @@ const Layout = ({ children, title = 'Default title' }) => {
       <Head>
         <title>{title}</title>
       </Head>
-      <main className="font-montserrat container mx-auto lg:px-40 mt-5 flex flex-1 justify-center item-center w-screen flex-col">
+      <main className="font-montserrat container mx-auto lg:px-40 mt-5 flex flex-1 justify-center item-center w-screen flex-col mb-10">
         {children}
       </main>
-      <footer className="w-full h-6 flex justify-center item-center text-gray-400">
-        masa @ DevChallenges.io
+      <footer className="w-full h-6 flex justify-center item-center text-gray-400 mb-10">
+        <div className="w-2/6 border-t text-center pt-5">
+          masa @ DevChallenges.io
+        </div>
       </footer>
     </div>
   )
