@@ -4,47 +4,50 @@ import Card from './Card'
 import MuiPagination from '@material-ui/lab/Pagination'
 import { withStyles } from '@material-ui/core/styles'
 import Tags from './Tags'
+import { getIsDuplicate, getMaxPage } from '../lib/commonFunction'
+import { usePrevious } from '../lib/usePrevious'
 
 // todo:typesにまとめる
 type Props = {
   tags: ITagFields[]
   portfolios: IPortfoliosFields[]
 }
-// export type TagState = {
-//   title: string
-//   isToggleOn: boolean
-// }
+export type SelectedTags = string[]
 
 const Portfolios = ({ tags, portfolios }: Props) => {
   const [page, setPage] = useState(1)
   const [currentPortfolios, setCurrentPortfolios] = useState(
     portfolios.slice(0, 3)
   )
+  const initialSelectedTags: SelectedTags = []
+  const [selectedTags, setSelectedTags] = useState(initialSelectedTags)
+  // todo:マジックナンバーを環境変数化したい、giridの横幅もだよね
+  const [maxPage, setMaxPage] = useState(getMaxPage(portfolios.length, 3))
 
-  // const initialTagState: TagState[] = tags.map((tag) => {
-  //   return { title: tag.title, isToggleOn: false }
-  // })
-
-  // const [tagState, setTagState] = useState(initialTagState)
+  const prevPage = usePrevious(page)
 
   useEffect(() => {
-    setCurrentPortfolios(portfolios.slice((page - 1) * 3, page * 3))
-    // setCurrentPortfolios(
-    //   portfolios
-    //     .filter((item) => {
-    //       //itemはポートフォリオ
-    //       return item.tags.map((itemTag) => {
-    //         //itemTagはポートフォリオのTag
-    //         tagState
-    //           .filter((tag) => (tag.isToggleOn ? tag.title : false))
-    //           .map((selectedTag) => {
-    //             selectedTag.title === itemTag.fields.title
-    //           })
-    //       })
-    //     })
-    //     .slice((page - 1) * 3, page * 3)
-    // )
-  }, [page])
+    let newPortfolios = portfolios
+
+    if (selectedTags?.length) {
+      //tagが選択されている場合、先にtagでの絞り込む
+      newPortfolios = newPortfolios.filter((item) => {
+        //portfolioのtag名称だけの配列を作成
+        const portfolioTags = item.tags.map((itemTag) => itemTag.fields.title)
+        //配列同士で存在チェックし、存在すればtrue、しなければfalseを返す
+        return getIsDuplicate(selectedTags, portfolioTags)
+      })
+
+      if (page == prevPage) {
+        setPage(1)
+      }
+    }
+    setMaxPage(getMaxPage(newPortfolios.length, 3))
+
+    //ページネーションする
+    newPortfolios = newPortfolios.slice((page - 1) * 3, page * 3)
+    setCurrentPortfolios(newPortfolios)
+  }, [page, selectedTags])
 
   const Pagination = withStyles({
     root: {
@@ -57,8 +60,8 @@ const Portfolios = ({ tags, portfolios }: Props) => {
       <Tags
         tags={tags}
         countProject={portfolios.length}
-        // tagState={tagState}
-        // setTagState={setTagState}
+        selectedTags={selectedTags}
+        setSelectedTags={setSelectedTags}
       />
       <div className="grid grid-cols-3 gap-4 mb-5">
         {currentPortfolios.map((portfolio, idx) => (
@@ -100,7 +103,7 @@ const Portfolios = ({ tags, portfolios }: Props) => {
       <div style={{ textAlign: 'center' }}>
         {/* todo:色を水色に変更したい */}
         <Pagination
-          count={2} //総ページ数
+          count={maxPage} //総ページ数
           color="primary" //ページネーションの色
           onChange={(e, page) => setPage(page)} //変更されたときに走る関数。第2引数にページ番号が入る
           page={page} //現在のページ番号
