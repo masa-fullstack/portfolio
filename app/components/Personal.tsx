@@ -1,7 +1,6 @@
 import { IPersonalFields } from '../@types/generated/contentful'
 import Card from './Card'
 
-// todo:typesにまとめる
 type Props = {
   personal: IPersonalFields
 }

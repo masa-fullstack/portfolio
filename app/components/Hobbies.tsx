@@ -2,7 +2,6 @@ import React from 'react'
 import { IHobbiesFields } from '../@types/generated/contentful'
 import Card from './Card'
 
-// todo:typesにまとめる
 type Props = {
   hobbies: IHobbiesFields[]
 }

@@ -3,7 +3,6 @@ import { ISkillsFields } from '../@types/generated/contentful'
 import Card from './Card'
 import ProgressBar from './ProgressBar'
 
-// todo:typesにまとめる
 type Props = {
   skills: ISkillsFields[]
 }

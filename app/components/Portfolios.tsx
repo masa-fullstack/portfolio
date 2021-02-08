@@ -6,13 +6,12 @@ import { withStyles } from '@material-ui/core/styles'
 import Tags from './Tags'
 import { getIsDuplicate, getMaxPage } from '../lib/commonFunction'
 import { usePrevious } from '../lib/usePrevious'
+import { SelectedTags } from '../@types/types'
 
-// todo:typesにまとめる
 type Props = {
   tags: ITagFields[]
   portfolios: IPortfoliosFields[]
 }
-export type SelectedTags = string[]
 
 const Portfolios = ({ tags, portfolios }: Props) => {
   const [page, setPage] = useState(1)

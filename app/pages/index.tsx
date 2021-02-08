@@ -24,7 +24,6 @@ import {
   getTags,
 } from '../lib/api'
 
-// todo:typesにまとめる
 type Props = {
   personal: IPersonalFields
   skills: ISkillsFields[]
