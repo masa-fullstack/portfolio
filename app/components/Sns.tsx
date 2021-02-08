@@ -1,7 +1,6 @@
 import { ISnsFields } from '../@types/generated/contentful'
 import Card from './Card'
 
-// todo:typesにまとめる
 type Props = {
   sns: ISnsFields
 }

@@ -3,7 +3,6 @@ import { IExperiencesFields } from '../@types/generated/contentful'
 import Card from './Card'
 import { format } from 'date-fns'
 
-// todo:typesにまとめる
 type Props = {
   experiences: IExperiencesFields[]
 }

@@ -1,10 +1,9 @@
 import React from 'react'
 import { ITagFields } from '../@types/generated/contentful'
+import { SelectedTags } from '../@types/types'
 import Card from './Card'
-import { SelectedTags } from './Portfolios'
 import Tag from './Tag'
 
-// todo:typesにまとめる
 type Props = {
   tags: ITagFields[]
   countProject: number

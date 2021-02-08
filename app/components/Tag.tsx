@@ -1,6 +1,5 @@
-import { SelectedTags } from './Portfolios'
+import { SelectedTags } from '../@types/types'
 
-// todo:typesにまとめる
 type Props = {
   title: string
   selectedTags: SelectedTags
