@@ -8,15 +8,16 @@ type Props = {
 }
 
 const Skills = ({ skills }: Props) => {
+  // console.log('Skills rendering')
   return (
     <Card title="SKILLS">
-      <div className="grid grid-cols-2 grid-flow-row">
+      <div className="grid grid-cols-2 grid-flow-row items-center">
         {skills.map((skill, idx) => (
           <React.Fragment key={idx}>
             <div className="text-base">{skill.title}</div>
             <ProgressBar
               key={idx}
-              bgcolor="bg-blue-600"
+              bgcolor="bg-blue-500"
               completed={skill.level}
               label=""
             />

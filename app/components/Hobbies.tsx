@@ -7,6 +7,7 @@ type Props = {
 }
 
 const Hobbies = ({ hobbies }: Props) => {
+  // console.log('Hobbies rendering')
   return (
     <Card title="Hobbies">
       <div className="grid grid-cols-1 grid-flow-row">

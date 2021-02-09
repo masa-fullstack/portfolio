@@ -1,113 +1,143 @@
-import React, { useEffect, useState } from 'react'
+import React, { createContext, useEffect, useReducer } from 'react'
 import { IPortfoliosFields, ITagFields } from '../@types/generated/contentful'
-import Card from './Card'
-import MuiPagination from '@material-ui/lab/Pagination'
-import { withStyles } from '@material-ui/core/styles'
 import Tags from './Tags'
 import { getIsDuplicate, getMaxPage } from '../lib/commonFunction'
-import { usePrevious } from '../lib/usePrevious'
 import { SelectedTags } from '../@types/types'
+import Pagenation from './Pagenation'
+import Portfolio from './Portfolio'
 
 type Props = {
   tags: ITagFields[]
   portfolios: IPortfoliosFields[]
 }
 
-const Portfolios = ({ tags, portfolios }: Props) => {
-  const [page, setPage] = useState(1)
-  const [currentPortfolios, setCurrentPortfolios] = useState(
-    portfolios.slice(0, 3)
-  )
-  const initialSelectedTags: SelectedTags = []
-  const [selectedTags, setSelectedTags] = useState(initialSelectedTags)
-  // todo:マジックナンバーを環境変数化したい、giridの横幅もだよね
-  const [maxPage, setMaxPage] = useState(getMaxPage(portfolios.length, 3))
+type State = {
+  page: number
+  maxPage: number
+  projectCount: number
+  selectedTags: string[]
+  displayPortfolios: IPortfoliosFields[]
+  portfolios: IPortfoliosFields[]
+}
 
-  const prevPage = usePrevious(page)
+type Action =
+  | { type: 'SETINITPORTFOLIO'; value: IPortfoliosFields[] }
+  | { type: 'SETPAGE'; value: number }
+  | { type: 'ADDTAG'; value: string }
+  | { type: 'REMOVETAG'; value: string }
 
-  useEffect(() => {
-    let newPortfolios = portfolios
+type TagFilter = (
+  tags: SelectedTags,
+  portfolios: IPortfoliosFields[]
+) => { count: number; filterdPortfolios: IPortfoliosFields[] }
 
-    if (selectedTags?.length) {
-      //tagが選択されている場合、先にtagでの絞り込む
-      newPortfolios = newPortfolios.filter((item) => {
-        //portfolioのtag名称だけの配列を作成
-        const portfolioTags = item.tags.map((itemTag) => itemTag.fields.title)
-        //配列同士で存在チェックし、存在すればtrue、しなければfalseを返す
-        return getIsDuplicate(selectedTags, portfolioTags)
-      })
+type PageFilter = (
+  page: number,
+  portfolios: IPortfoliosFields[]
+) => IPortfoliosFields[]
 
-      if (page == prevPage) {
-        setPage(1)
+export const PortfolioContext = createContext(
+  {} as { state: State; dispatch: React.Dispatch<Action> }
+)
+
+const initialState: State = {
+  page: 1,
+  maxPage: 1,
+  projectCount: 0,
+  selectedTags: [],
+  displayPortfolios: [],
+  portfolios: [],
+}
+
+//tagによってPortofolioを絞り込む処理
+const tagFilter: TagFilter = (selectedTags, portofolios) => {
+  const filterdPortfolios = [...portofolios].filter((item) => {
+    //portfolioのtag名称だけの配列を作成
+    const portfolioTags = item.tags.map((itemTag) => itemTag.fields.title)
+    //配列同士で存在チェックし、存在すればtrue、しなければfalseを返す
+    return getIsDuplicate(selectedTags, portfolioTags)
+  })
+
+  return {
+    count: filterdPortfolios.length,
+    filterdPortfolios: filterdPortfolios.slice(0, 3),
+  }
+}
+
+const pageFilter: PageFilter = (page, portfolios) => {
+  return portfolios.slice((page - 1) * 3, page * 3)
+}
+
+const reducer = (state: State, action: Action) => {
+  switch (action.type) {
+    case 'SETINITPORTFOLIO':
+      return {
+        ...state,
+        maxPage: getMaxPage(action.value.length, 3),
+        projectCount: action.value.length,
+        displayPortfolios: action.value.slice(0, 3),
+        portfolios: action.value,
+      }
+    case 'SETPAGE':
+      return {
+        ...state,
+        page: action.value,
+        displayPortfolios: pageFilter(action.value, state.portfolios),
+      }
+    case 'ADDTAG': {
+      const addSelectedTags = [...state.selectedTags, action.value]
+      const { count, filterdPortfolios } = tagFilter(
+        addSelectedTags,
+        state.portfolios
+      )
+      return {
+        ...state,
+        page: initialState.page,
+        maxPage: getMaxPage(count, 3),
+        projectCount: count,
+        selectedTags: addSelectedTags,
+        displayPortfolios: filterdPortfolios,
       }
     }
-    setMaxPage(getMaxPage(newPortfolios.length, 3))
+    case 'REMOVETAG': {
+      const removeSelectedTags = [...state.selectedTags].filter(
+        (tag) => tag !== action.value
+      )
+      const { count, filterdPortfolios } = tagFilter(
+        removeSelectedTags,
+        state.portfolios
+      )
 
-    //ページネーションする
-    newPortfolios = newPortfolios.slice((page - 1) * 3, page * 3)
-    setCurrentPortfolios(newPortfolios)
-  }, [page, selectedTags])
+      return {
+        ...state,
+        page: initialState.page,
+        maxPage: getMaxPage(count, 3),
+        projectCount: count,
+        selectedTags: removeSelectedTags,
+        displayPortfolios: filterdPortfolios,
+      }
+    }
+  }
+}
 
-  const Pagination = withStyles({
-    root: {
-      display: 'inline-block', //中央寄せのためインラインブロックに変更
-    },
-  })(MuiPagination)
+const Portfolios = ({ tags, portfolios }: Props) => {
+  const [state, dispatch] = useReducer(reducer, initialState)
+
+  // console.log('Portfolios rendering')
+  useEffect(() => dispatch({ type: 'SETINITPORTFOLIO', value: portfolios }), [])
 
   return (
     <div>
-      <Tags
-        tags={tags}
-        countProject={portfolios.length}
-        selectedTags={selectedTags}
-        setSelectedTags={setSelectedTags}
-      />
-      <div className="grid grid-cols-3 gap-4 mb-5">
-        {currentPortfolios.map((portfolio, idx) => (
-          <Card key={idx} className="flex flex-col">
-            <div className="w-full pb-32 relative mb-3">
-              <img
-                className="rounded-xl object-cover absolute w-full h-full"
-                src={`https:${portfolio.thumbnail.fields.file.url}`}
-              />
-            </div>
-            <div className="text-xs">
-              {portfolio.tags.map((tag) => `#${tag.fields.title} `)}
-            </div>
-            <div className="font-bold text-lg my-3">{portfolio.title}</div>
-            <div className="text-gray-500 text-sm mb-8">
-              {portfolio.content}
-            </div>
-            <div className="text-center mt-auto mb-5">
-              <a
-                className="text-base no-underline bg-blue-400 text-white border-2 border-blue-400 rounded-xl py-2 px-5 mr-2"
-                href={portfolio.demoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                demo
-              </a>
-              <a
-                className="text-base no-underline bg-white text-blue-400 border-2 border-blue-400 rounded-xl py-2 px-5 ml-2"
-                href={portfolio.codeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                code
-              </a>
-            </div>
-          </Card>
-        ))}
-      </div>
-      <div style={{ textAlign: 'center' }}>
-        {/* todo:色を水色に変更したい */}
-        <Pagination
-          count={maxPage} //総ページ数
-          color="primary" //ページネーションの色
-          onChange={(e, page) => setPage(page)} //変更されたときに走る関数。第2引数にページ番号が入る
-          page={page} //現在のページ番号
-        />
-      </div>
+      <PortfolioContext.Provider value={{ state, dispatch }}>
+        <Tags tags={tags} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+          {state.displayPortfolios.map((portfolio, idx) => (
+            <Portfolio key={idx} portfolio={portfolio} />
+          ))}
+        </div>
+
+        <Pagenation />
+      </PortfolioContext.Provider>
     </div>
   )
 }

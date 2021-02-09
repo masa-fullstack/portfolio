@@ -6,6 +6,7 @@ type Props = {
 }
 
 const Sns = ({ sns }: Props) => {
+  // console.log('SNS rendering')
   return (
     <Card title="SNS">
       <div className="grid grid-cols-5 grid-flow-row">
