@@ -8,6 +8,7 @@ type Props = {
 }
 
 const Experiences = ({ experiences }: Props) => {
+  // console.log('Experiences rendering')
   return (
     <Card title="Experiences">
       <div className="grid grid-cols-4 grid-flow-row gap-4">

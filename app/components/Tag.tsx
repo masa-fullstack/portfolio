@@ -1,25 +1,27 @@
-import { SelectedTags } from '../@types/types'
+import React, { useContext } from 'react'
+import { PortfolioContext } from './Portfolios'
 
 type Props = {
   title: string
-  selectedTags: SelectedTags
-  setSelectedTags: React.Dispatch<React.SetStateAction<SelectedTags>>
 }
 
-const Tag = ({ title, selectedTags, setSelectedTags }: Props) => {
+const Tag = ({ title }: Props) => {
+  const portofolioContext = useContext(PortfolioContext)
+
   const handleClick = () => {
-    selectedTags.find((tag) => tag === title)
+    portofolioContext.state.selectedTags.find((tag) => tag === title)
       ? //selectedTagにクリックしたtagが存在する場合、クリックしたtagをselectedTagsから削除
-        setSelectedTags(selectedTags.filter((tag) => tag !== title))
+        portofolioContext.dispatch({ type: 'REMOVETAG', value: title })
       : //selectedTagにクリックしたtagが存在しない場合、クリックしたtagをselectedTagsに追加
-        setSelectedTags([...selectedTags, title])
+        portofolioContext.dispatch({ type: 'ADDTAG', value: title })
   }
+  // console.log('Tag rendering')
 
   return (
     <div
-      className={`text-xs border-2 rounded-xl py-2 px-5 mr-2 ${
-        selectedTags.find((tag) => tag === title)
-          ? 'bg-blue-400 text-white  border-blue-400'
+      className={`text-xs border-2 rounded-xl py-2 px-5 my-1 mr-2 cursor-pointer ${
+        portofolioContext.state.selectedTags.find((tag) => tag === title)
+          ? 'bg-blue-500 text-white  border-blue-500'
           : 'bg-white text-gray-400  border-gray-400'
       }
           `}
@@ -30,4 +32,4 @@ const Tag = ({ title, selectedTags, setSelectedTags }: Props) => {
   )
 }
 
-export default Tag
+export default React.memo(Tag)

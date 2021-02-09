@@ -6,6 +6,10 @@ module.exports = {
       fontFamily: {
         montserrat: ['Montserrat'],
       },
+      screens: {
+        xs: { min: '576px' },
+        // => @media (min-width: 576px) { ... }
+      },
     },
   },
   variants: {

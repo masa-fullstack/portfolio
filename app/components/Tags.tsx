@@ -1,32 +1,26 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { ITagFields } from '../@types/generated/contentful'
-import { SelectedTags } from '../@types/types'
 import Card from './Card'
+import { PortfolioContext } from './Portfolios'
 import Tag from './Tag'
 
 type Props = {
   tags: ITagFields[]
-  countProject: number
-  selectedTags: SelectedTags
-  setSelectedTags: React.Dispatch<React.SetStateAction<SelectedTags>>
 }
 
-const Tags = ({ tags, countProject, selectedTags, setSelectedTags }: Props) => {
+const Tags = ({ tags }: Props) => {
+  // console.log('Tags rendering')
+  const portofolioContext = useContext(PortfolioContext)
   return (
     <Card className="mb-5">
-      <div className="mb-3">{`Projects(${countProject})`}</div>
-      <div className="flex">
+      <div className="mb-3">{`Projects(${portofolioContext.state.projectCount})`}</div>
+      <div className="flex flex-wrap">
         {tags.map((tag, idx) => (
-          <Tag
-            key={idx}
-            title={tag.title}
-            selectedTags={selectedTags}
-            setSelectedTags={setSelectedTags}
-          />
+          <Tag key={idx} title={tag.title} />
         ))}
       </div>
     </Card>
   )
 }
 
-export default Tags
+export default React.memo(Tags)

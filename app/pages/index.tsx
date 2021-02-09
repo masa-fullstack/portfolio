@@ -43,23 +43,23 @@ export const Home = ({
   tags,
   portfolios,
 }: Props): JSX.Element => {
+  // console.log('Home rendering')
   return (
-    // todo:レスポンシブで縦一列になるように
     <Layout title="Home">
       <div className="grid grid-cols-5 grid-flow-row gap-8">
         <div className="col-span-5">
           <Personal personal={personal} />
         </div>
-        <div className="col-span-2">
+        <div className="col-span-5 md:col-span-2">
           <Skills skills={skills} />
         </div>
-        <div className="col-span-3 row-span-2">
+        <div className="col-span-5 md:col-span-3 md:row-span-2">
           <Sns sns={sns} />
         </div>
-        <div className="col-span-2 row-span-3">
+        <div className="col-span-5 md:col-span-2 md:row-span-3">
           <Hobbies hobbies={hobbies} />
         </div>
-        <div className="col-span-3">
+        <div className="col-span-5 md:col-span-3">
           <Experiences experiences={experiences} />
         </div>
         <div className="col-span-5">
