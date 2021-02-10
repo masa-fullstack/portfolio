@@ -1,26 +1,24 @@
-import React, { useContext } from 'react'
-import { PortfolioContext } from './Portfolios'
+import React from 'react'
+import { Action } from './Portfolios'
 
 type Props = {
   title: string
+  dispatch: React.Dispatch<Action>
+  isSelected: boolean
 }
 
-const Tag = ({ title }: Props) => {
-  const portofolioContext = useContext(PortfolioContext)
-
+const Tag = ({ title, dispatch, isSelected }: Props) => {
   const handleClick = () => {
-    portofolioContext.state.selectedTags.find((tag) => tag === title)
-      ? //selectedTagにクリックしたtagが存在する場合、クリックしたtagをselectedTagsから削除
-        portofolioContext.dispatch({ type: 'REMOVETAG', value: title })
-      : //selectedTagにクリックしたtagが存在しない場合、クリックしたtagをselectedTagsに追加
-        portofolioContext.dispatch({ type: 'ADDTAG', value: title })
+    isSelected
+      ? dispatch({ type: 'REMOVE_TAG', value: title })
+      : dispatch({ type: 'ADD_TAG', value: title })
   }
-  // console.log('Tag rendering')
+  // console.log('Tag rendering' + title)
 
   return (
     <div
       className={`text-xs border-2 rounded-xl py-2 px-5 my-1 mr-2 cursor-pointer ${
-        portofolioContext.state.selectedTags.find((tag) => tag === title)
+        isSelected
           ? 'bg-blue-500 text-white  border-blue-500'
           : 'bg-white text-gray-400  border-gray-400'
       }

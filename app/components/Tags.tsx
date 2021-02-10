@@ -1,22 +1,29 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { ITagFields } from '../@types/generated/contentful'
 import Card from './Card'
-import { PortfolioContext } from './Portfolios'
+import { Action } from './Portfolios'
 import Tag from './Tag'
 
 type Props = {
   tags: ITagFields[]
+  portfolioCount: number
+  dispatch: React.Dispatch<Action>
+  selectedTags: string[]
 }
 
-const Tags = ({ tags }: Props) => {
+const Tags = ({ tags, portfolioCount, dispatch, selectedTags }: Props) => {
   // console.log('Tags rendering')
-  const portofolioContext = useContext(PortfolioContext)
   return (
     <Card className="mb-5">
-      <div className="mb-3">{`Projects(${portofolioContext.state.projectCount})`}</div>
+      <div className="mb-3">{`Projects(${portfolioCount})`}</div>
       <div className="flex flex-wrap">
         {tags.map((tag, idx) => (
-          <Tag key={idx} title={tag.title} />
+          <Tag
+            key={idx}
+            title={tag.title}
+            dispatch={dispatch}
+            isSelected={selectedTags.includes(tag.title)}
+          />
         ))}
       </div>
     </Card>

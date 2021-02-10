@@ -1,7 +1,12 @@
 import { withStyles } from '@material-ui/core/styles'
 import MuiPagination from '@material-ui/lab/Pagination'
-import { useContext } from 'react'
-import { PortfolioContext } from './Portfolios'
+import { Action } from './Portfolios'
+
+type Props = {
+  maxPage: number
+  page: number
+  dispatch: React.Dispatch<Action>
+}
 
 const Pagination = withStyles({
   root: {
@@ -14,18 +19,15 @@ const Pagination = withStyles({
   },
 })(MuiPagination)
 
-const Pagenation = () => {
+const Pagenation = ({ maxPage, page, dispatch }: Props) => {
   // console.log('Pagenation rendering')
-  const portofolioContext = useContext(PortfolioContext)
   return (
     <div style={{ textAlign: 'center' }}>
       <Pagination
-        count={portofolioContext.state.maxPage} //総ページ数
+        count={maxPage} //総ページ数
         color="primary" //ページネーションの色
-        onChange={(e, page) =>
-          portofolioContext.dispatch({ type: 'SETPAGE', value: page })
-        } //変更されたときに走る関数。第2引数にページ番号が入る
-        page={portofolioContext.state.page} //現在のページ番号
+        onChange={(e, page) => dispatch({ type: 'SET_PAGE', value: page })} //変更されたときに走る関数。第2引数にページ番号が入る
+        page={page} //現在のページ番号
       />
     </div>
   )

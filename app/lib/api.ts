@@ -9,6 +9,8 @@ import {
   ITagFields,
 } from '../@types/generated/contentful'
 
+// todo:API最適化：graphQLなので１度でFETCHできないか？
+// todo:API最適化：必要なデータのみは FETCHできないか？d.tsの型から必要な型に変換？
 const client = createClient({
   accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
   space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
