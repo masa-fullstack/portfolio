@@ -62,6 +62,7 @@ export const Home = ({
         <div className="col-span-5 md:col-span-3">
           <Experiences experiences={experiences} />
         </div>
+
         <div className="col-span-5">
           <Portfolios tags={tags} portfolios={portfolios} />
         </div>

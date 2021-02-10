@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useReducer } from 'react'
+import React, { useReducer } from 'react'
 import { IPortfoliosFields, ITagFields } from '../@types/generated/contentful'
 import Tags from './Tags'
 import { getIsDuplicate, getMaxPage } from '../lib/commonFunction'
@@ -13,55 +13,41 @@ type Props = {
 
 type State = {
   page: number
-  maxPage: number
-  projectCount: number
   selectedTags: string[]
-  displayPortfolios: IPortfoliosFields[]
-  portfolios: IPortfoliosFields[]
 }
 
-type Action =
-  | { type: 'SETINITPORTFOLIO'; value: IPortfoliosFields[] }
-  | { type: 'SETPAGE'; value: number }
-  | { type: 'ADDTAG'; value: string }
-  | { type: 'REMOVETAG'; value: string }
+export type Action =
+  | { type: 'SET_PAGE'; value: number }
+  | { type: 'ADD_TAG'; value: string }
+  | { type: 'REMOVE_TAG'; value: string }
 
 type TagFilter = (
   tags: SelectedTags,
   portfolios: IPortfoliosFields[]
-) => { count: number; filterdPortfolios: IPortfoliosFields[] }
+) => IPortfoliosFields[]
 
 type PageFilter = (
   page: number,
   portfolios: IPortfoliosFields[]
 ) => IPortfoliosFields[]
 
-export const PortfolioContext = createContext(
-  {} as { state: State; dispatch: React.Dispatch<Action> }
-)
-
 const initialState: State = {
   page: 1,
-  maxPage: 1,
-  projectCount: 0,
   selectedTags: [],
-  displayPortfolios: [],
-  portfolios: [],
 }
 
 //tagによってPortofolioを絞り込む処理
 const tagFilter: TagFilter = (selectedTags, portofolios) => {
-  const filterdPortfolios = [...portofolios].filter((item) => {
-    //portfolioのtag名称だけの配列を作成
-    const portfolioTags = item.tags.map((itemTag) => itemTag.fields.title)
-    //配列同士で存在チェックし、存在すればtrue、しなければfalseを返す
-    return getIsDuplicate(selectedTags, portfolioTags)
-  })
-
-  return {
-    count: filterdPortfolios.length,
-    filterdPortfolios: filterdPortfolios.slice(0, 3),
-  }
+  return selectedTags
+    ? //tagが選択されている時はフィルタリングする
+      [...portofolios].filter((item) => {
+        //portfolioのtag名称だけの配列を作成
+        const portfolioTags = item.tags.map((itemTag) => itemTag.fields.title)
+        //配列同士で存在チェックし、存在すればtrue、しなければfalseを返す
+        return getIsDuplicate(selectedTags, portfolioTags)
+      })
+    : //tagが選択されていない場合はそのまま返す
+      portofolios
 }
 
 const pageFilter: PageFilter = (page, portfolios) => {
@@ -70,74 +56,51 @@ const pageFilter: PageFilter = (page, portfolios) => {
 
 const reducer = (state: State, action: Action) => {
   switch (action.type) {
-    case 'SETINITPORTFOLIO':
-      return {
-        ...state,
-        maxPage: getMaxPage(action.value.length, 3),
-        projectCount: action.value.length,
-        displayPortfolios: action.value.slice(0, 3),
-        portfolios: action.value,
-      }
-    case 'SETPAGE':
+    case 'SET_PAGE':
       return {
         ...state,
         page: action.value,
-        displayPortfolios: pageFilter(action.value, state.portfolios),
       }
-    case 'ADDTAG': {
-      const addSelectedTags = [...state.selectedTags, action.value]
-      const { count, filterdPortfolios } = tagFilter(
-        addSelectedTags,
-        state.portfolios
-      )
+    case 'ADD_TAG':
       return {
         ...state,
         page: initialState.page,
-        maxPage: getMaxPage(count, 3),
-        projectCount: count,
-        selectedTags: addSelectedTags,
-        displayPortfolios: filterdPortfolios,
+        selectedTags: [...state.selectedTags, action.value],
       }
-    }
-    case 'REMOVETAG': {
-      const removeSelectedTags = [...state.selectedTags].filter(
-        (tag) => tag !== action.value
-      )
-      const { count, filterdPortfolios } = tagFilter(
-        removeSelectedTags,
-        state.portfolios
-      )
-
+    case 'REMOVE_TAG':
       return {
         ...state,
         page: initialState.page,
-        maxPage: getMaxPage(count, 3),
-        projectCount: count,
-        selectedTags: removeSelectedTags,
-        displayPortfolios: filterdPortfolios,
+        selectedTags: [...state.selectedTags].filter(
+          (tag) => tag !== action.value
+        ),
       }
-    }
   }
 }
 
 const Portfolios = ({ tags, portfolios }: Props) => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  // console.log('Portfolios rendering')
-  useEffect(() => dispatch({ type: 'SETINITPORTFOLIO', value: portfolios }), [])
+  const filterdPortfolios = tagFilter(state.selectedTags, portfolios)
+  const portfolioCount = filterdPortfolios.length
+  const maxPage = getMaxPage(portfolioCount, 3)
+  const displayPortfolios = pageFilter(state.page, filterdPortfolios)
 
   return (
     <div>
-      <PortfolioContext.Provider value={{ state, dispatch }}>
-        <Tags tags={tags} />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
-          {state.displayPortfolios.map((portfolio, idx) => (
-            <Portfolio key={idx} portfolio={portfolio} />
-          ))}
-        </div>
+      <Tags
+        tags={tags}
+        portfolioCount={portfolioCount}
+        dispatch={dispatch}
+        selectedTags={state.selectedTags}
+      />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+        {displayPortfolios.map((portfolio, idx) => (
+          <Portfolio key={idx} portfolio={portfolio} />
+        ))}
+      </div>
 
-        <Pagenation />
-      </PortfolioContext.Provider>
+      <Pagenation maxPage={maxPage} page={state.page} dispatch={dispatch} />
     </div>
   )
 }
