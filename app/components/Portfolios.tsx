@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react'
+import React, { useReducer, useRef, useCallback, useEffect } from 'react'
 import { IPortfoliosFields, ITagFields } from '../@types/generated/contentful'
 import Tags from './Tags'
 import { getIsDuplicate, getMaxPage } from '../lib/commonFunction'
@@ -31,54 +31,72 @@ type PageFilter = (
   portfolios: IPortfoliosFields[]
 ) => IPortfoliosFields[]
 
-const initialState: State = {
-  page: 1,
-  selectedTags: [],
-}
-
-//tagによってPortofolioを絞り込む処理
-const tagFilter: TagFilter = (selectedTags, portofolios) => {
-  return selectedTags
-    ? //tagが選択されている時はフィルタリングする
-      [...portofolios].filter((item) => {
-        //portfolioのtag名称だけの配列を作成
-        const portfolioTags = item.tags.map((itemTag) => itemTag.fields.title)
-        //配列同士で存在チェックし、存在すればtrue、しなければfalseを返す
-        return getIsDuplicate(selectedTags, portfolioTags)
-      })
-    : //tagが選択されていない場合はそのまま返す
-      portofolios
-}
-
-const pageFilter: PageFilter = (page, portfolios) => {
-  return portfolios.slice((page - 1) * 3, page * 3)
-}
-
-const reducer = (state: State, action: Action) => {
-  switch (action.type) {
-    case 'SET_PAGE':
-      return {
-        ...state,
-        page: action.value,
-      }
-    case 'ADD_TAG':
-      return {
-        ...state,
-        page: initialState.page,
-        selectedTags: [...state.selectedTags, action.value],
-      }
-    case 'REMOVE_TAG':
-      return {
-        ...state,
-        page: initialState.page,
-        selectedTags: [...state.selectedTags].filter(
-          (tag) => tag !== action.value
-        ),
-      }
-  }
-}
-
 const Portfolios = ({ tags, portfolios }: Props) => {
+  const initialState: State = {
+    page: 1,
+    selectedTags: [],
+  }
+
+  //タグフィルターやページネーション時にスクロールさせるためにrefを作成
+  const topRef = useRef<HTMLDivElement>()
+  const bottomRef = useRef<HTMLDivElement>()
+  //useReducerのaction.typeをuseEffectから参照するためrefを作成
+  const typeRef = useRef<Action['type'] | 'INIT'>('INIT')
+
+  // このコールバックを呼び出して ref.current.scrollIntoView() を呼び出してスクロール
+  const scrollToBottomOfList = useCallback(
+    (ref, block) => {
+      ref!.current!.scrollIntoView({
+        behavior: 'smooth',
+        block: block,
+      })
+    },
+    [topRef, bottomRef]
+  )
+
+  //tagによってPortofolioを絞り込む処理
+  const tagFilter: TagFilter = (selectedTags, portofolios) => {
+    return selectedTags
+      ? //tagが選択されている時はフィルタリングする
+        [...portofolios].filter((item) => {
+          //portfolioのtag名称だけの配列を作成
+          const portfolioTags = item.tags.map((itemTag) => itemTag.fields.title)
+          //配列同士で存在チェックし、存在すればtrue、しなければfalseを返す
+          return getIsDuplicate(selectedTags, portfolioTags)
+        })
+      : //tagが選択されていない場合はそのまま返す
+        portofolios
+  }
+
+  const pageFilter: PageFilter = (page, portfolios) => {
+    return portfolios.slice((page - 1) * 3, page * 3)
+  }
+
+  const reducer = (state: State, action: Action) => {
+    typeRef.current = action.type
+    switch (action.type) {
+      case 'SET_PAGE':
+        return {
+          ...state,
+          page: action.value,
+        }
+      case 'ADD_TAG':
+        return {
+          ...state,
+          page: initialState.page,
+          selectedTags: [...state.selectedTags, action.value],
+        }
+      case 'REMOVE_TAG':
+        return {
+          ...state,
+          page: initialState.page,
+          selectedTags: [...state.selectedTags].filter(
+            (tag) => tag !== action.value
+          ),
+        }
+    }
+  }
+
   const [state, dispatch] = useReducer(reducer, initialState)
 
   const filterdPortfolios = tagFilter(state.selectedTags, portfolios)
@@ -86,8 +104,20 @@ const Portfolios = ({ tags, portfolios }: Props) => {
   const maxPage = getMaxPage(portfolioCount, 3)
   const displayPortfolios = pageFilter(state.page, filterdPortfolios)
 
+  useEffect(() => {
+    if (typeRef.current === 'SET_PAGE') {
+      scrollToBottomOfList(bottomRef, 'end')
+    } else if (
+      typeRef.current === 'ADD_TAG' ||
+      typeRef.current === 'REMOVE_TAG'
+    ) {
+      scrollToBottomOfList(topRef, 'start')
+    }
+  })
+
   return (
     <div>
+      <div ref={topRef} />
       <Tags
         tags={tags}
         portfolioCount={portfolioCount}
@@ -101,6 +131,7 @@ const Portfolios = ({ tags, portfolios }: Props) => {
       </div>
 
       <Pagenation maxPage={maxPage} page={state.page} dispatch={dispatch} />
+      <div ref={bottomRef} />
     </div>
   )
 }
