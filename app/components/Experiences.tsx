@@ -24,7 +24,7 @@ const Experiences = ({ experiences }: Props) => {
               <div className="text-xs">
                 {format(new Date(experience.fromDay.substr(0, 10)), 'MMM yyyy')}
                 -
-                {experience.toDay !== null
+                {experience.toDay !== undefined
                   ? format(new Date(experience.toDay.substr(0, 10)), 'MMM yyyy')
                   : 'current'}
               </div>
