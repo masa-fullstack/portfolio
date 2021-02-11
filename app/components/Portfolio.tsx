@@ -1,5 +1,6 @@
 import React from 'react'
 import { IPortfoliosFields } from '../@types/generated/contentful'
+import Button from './Button'
 import Card from './Card'
 
 type Props = {
@@ -23,22 +24,8 @@ const Portfolio = ({ portfolio }: Props) => {
         <div className="font-bold text-lg my-3">{portfolio.title}</div>
         <div className="text-gray-500 text-sm mb-8">{portfolio.content}</div>
         <div className="text-center mt-auto mb-5">
-          <a
-            className="text-base no-underline bg-blue-500 text-white border-2 border-blue-500 rounded-xl py-2 px-5 mr-2"
-            href={portfolio.demoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            demo
-          </a>
-          <a
-            className="text-base no-underline bg-white text-blue-500 border-2 border-blue-500 rounded-xl py-2 px-5 ml-2"
-            href={portfolio.codeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            code
-          </a>
+          <Button buttonType="BLUE" title="demo" hrefURL={portfolio.demoUrl} />
+          <Button buttonType="WHITE" title="code" hrefURL={portfolio.codeUrl} />
         </div>
       </Card>
     </div>
