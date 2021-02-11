@@ -47,7 +47,6 @@ const Portfolios = ({ tags, portfolios }: Props) => {
   const scrollToBottomOfList = useCallback(
     (ref, block) => {
       ref!.current!.scrollIntoView({
-        behavior: 'smooth',
         block: block,
       })
     },
@@ -106,7 +105,7 @@ const Portfolios = ({ tags, portfolios }: Props) => {
 
   useEffect(() => {
     if (typeRef.current === 'SET_PAGE') {
-      scrollToBottomOfList(bottomRef, 'end')
+      scrollToBottomOfList(bottomRef, 'start')
     } else if (
       typeRef.current === 'ADD_TAG' ||
       typeRef.current === 'REMOVE_TAG'
