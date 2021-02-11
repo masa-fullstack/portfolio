@@ -39,13 +39,13 @@
 
 ![screenshot](./images/demo.gif)
 
-Developed with NextJS + Contentful(Headless CMS).
-For the NextJS template, we used the NextJS Typescript Boilerplate from the official examples.
-In NextJS, HTML was created with SSG, and in the portfolio display area, pagenation and tag filter were realized with CSR.
-CSR used the useReducer in React Hooks.
-For CSS, we used Tailwindcss.
-During development, we used docker-compose to build the development environment.
-(I could have used "vercel dev", but I wanted to learn docker.)
+Developed with NextJS + Contentful(Headless CMS).<br/>
+For the NextJS template, we used the NextJS Typescript Boilerplate from the official examples.<br/>
+In NextJS, HTML was created with SSG, and in the portfolio display area, pagenation and tag filter were realized with CSR.<br/>
+CSR used the useReducer in React Hooks.<br/>
+For CSS, we used Tailwindcss.<br/>
+During development, we used docker-compose to build the development environment.<br/>
+(I could have used "vercel dev", but I wanted to learn docker.)<br/>
 
 When updating the content, it is possible to maintain it by simply updating the content with Contentful.
 
