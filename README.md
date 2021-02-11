@@ -84,7 +84,7 @@ $ cd portfolio
 
 ```
 
-And you'll need to create Contentful space, content models.
+And you'll need to create Contentful space, content models.<br/>
 The following seven content models are required.
 
 - Personal
@@ -95,10 +95,10 @@ The following seven content models are required.
 - Tag
 - Portofolios
 
-I'll spare you the details.
+I'll spare you the details.<br/>
 (I plan to make it possible to import content models and test data into Contentful in the future.)
 
-And put the Contentful access token and other information in ./app/.env.local
+And put the Contentful access token and other information in ./app/.env.local<br/>
 Finally, when you start Docker, the server will be listed on localhost:4001.
 
 ```bash
